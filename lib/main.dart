@@ -13,17 +13,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+        scaffoldBackgroundColor: Colors.white,
         primarySwatch: Colors.blue,
+        primaryColor: Colors.white,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey.shade900,
+        primaryColor: Colors.black,
+        primarySwatch: Colors.grey,
+        colorScheme: const ColorScheme.dark(),
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -48,12 +50,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class LinePainter extends CustomPainter {
+  BuildContext context;
+
+  LinePainter(this.context);
+
   @override
   void paint(Canvas canvas, Size size) {
     const p1 = Offset(0, 0);
     var p2 = Offset(size.width, 0);
     var paint = Paint()
-      ..color = Colors.black87
+      ..color = Theme.of(context).colorScheme.inverseSurface
       ..strokeWidth = size.height
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(p1, p2, paint);
@@ -75,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter += 10;
+      _counter++;
     });
   }
 
@@ -116,8 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             CustomPaint(
-              size: Size(_counter, 8),
-              painter: LinePainter(),
+              size: Size(_counter * 10, 8),
+              painter: LinePainter(context),
             )
           ],
         ),
@@ -129,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
         icon: const Icon(Icons.add),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
