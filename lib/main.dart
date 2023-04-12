@@ -47,8 +47,26 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class LinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const p1 = Offset(0, 0);
+    var p2 = Offset(size.width, 0);
+    var paint = Paint()
+      ..color = Colors.black87
+      ..strokeWidth = size.height
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(p1, p2, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  double _counter = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -57,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      _counter += 10;
     });
   }
 
@@ -70,11 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -102,13 +115,20 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            CustomPaint(
+              size: Size(_counter, 8),
+              painter: LinePainter(),
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        tooltip: 'New dot',
+        label: const Text("New Dot"),
+        icon: const Icon(Icons.add),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
