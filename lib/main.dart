@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Timeline For Humanity',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         primarySwatch: Colors.blue,
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Timeline View'),
     );
   }
 }
@@ -50,19 +50,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class LinePainter extends CustomPainter {
-  BuildContext context;
-
+  final BuildContext context;
   LinePainter(this.context);
 
   @override
   void paint(Canvas canvas, Size size) {
-    const p1 = Offset(0, 0);
-    var p2 = Offset(size.width, 0);
-    var paint = Paint()
-      ..color = Theme.of(context).colorScheme.inverseSurface
-      ..strokeWidth = size.height
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(p1, p2, paint);
+    canvas.drawLine(
+      const Offset(0, 0),
+      Offset(size.width, 0),
+      Paint()
+        ..color = Theme.of(context).colorScheme.inverseSurface
+        ..strokeWidth = size.height
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   @override
@@ -72,6 +72,8 @@ class LinePainter extends CustomPainter {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double lineX = 0;
+  double lineY = 0;
   double _counter = 0;
 
   void _incrementCounter() {
@@ -97,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
+        child: Stack(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -112,18 +114,29 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          alignment: Alignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            CustomPaint(
-              size: Size(_counter * 10, 8),
-              painter: LinePainter(context),
+            Positioned(
+              left: lineX,
+              top: lineY,
+              child: Draggable(
+                feedback: CustomPaint(
+                  size: Size(_counter * 10, 8),
+                  painter: LinePainter(context),
+                ),
+                onDragEnd: (details) {
+                  setState(() {
+                    lineX = details.offset.dx;
+                    lineY = details.offset.dy;
+                  });
+                },
+                childWhenDragging: Container(),
+                child: CustomPaint(
+                  size: Size(_counter * 10, 8),
+                  painter: LinePainter(context),
+                ),
+              ),
             )
           ],
         ),
@@ -134,7 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
         label: const Text("New Dot"),
         icon: const Icon(Icons.add),
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
       ),
     );
   }
