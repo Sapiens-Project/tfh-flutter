@@ -11,8 +11,12 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   double _scale = 1.0;
-  double _previousScale = 1.0;
   Offset _offset = Offset.zero;
+
+  final _titleController = TextEditingController();
+  final _dateController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _epochController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,77 +25,126 @@ class _TimelineState extends State<Timeline> {
     final minEpoch = sortedEvents.first.epoch;
     final maxEpoch = sortedEvents.last.epoch;
 
-    return GestureDetector(
-      // onScaleStart: (details) {
-      //   setState(() {
-      //     _previousScale = _scale;
-      //   });
-      // },
-      // onScaleUpdate: (details) {
-      //   setState(() {
-      //     _scale = _previousScale * details.scale;
-      //   });
-      // },
-      onDoubleTap: () {
-        setState(() {
-          _scale = 1.0;
-          _offset = Offset.zero;
-        });
-      },
-      onPanUpdate: (details) {
-        setState(() {
-          _offset += details.delta;
-        });
-      },
-      child: Transform(
-        transform: Matrix4.identity()
-          ..translate(_offset.dx, _offset.dy)
-          ..scale(_scale),
-        child: Stack(
-          children: [
-            CustomPaint(
-              size: Size.infinite,
-              painter: TimelinePainter(minEpoch: minEpoch, maxEpoch: maxEpoch),
-            ),
-            for (final event in sortedEvents)
-              Positioned(
-                left: MediaQuery.of(context).size.width / 2 - 10,
-                top: (event.epoch - minEpoch) /
-                    (maxEpoch - minEpoch) *
-                    MediaQuery.of(context).size.height,
-                child: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text(event.title),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Date: ${event.date}'),
-                            SizedBox(height: 8),
-                            Text('Description: ${event.description}'),
-                          ],
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('Close'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.black),
-                  ),
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Add Event'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(labelText: 'Title'),
+                    ),
+                    TextField(
+                      controller: _dateController,
+                      decoration: InputDecoration(labelText: 'Date'),
+                    ),
+                    TextField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(labelText: 'Description'),
+                    ),
+                    TextField(
+                      controller: _epochController,
+                      decoration: InputDecoration(labelText: 'Epoch'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ],
                 ),
               ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.events.add(Event(
+                        title: _titleController.text,
+                        date: _dateController.text,
+                        description: _descriptionController.text,
+                        epoch: int.parse(_epochController.text),
+                      ));
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text('Add'),
+                ),
+              ],
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+      body: GestureDetector(
+        onDoubleTap: () {
+          setState(() {
+            _scale = 1.0;
+            _offset = Offset.zero;
+          });
+        },
+        onPanUpdate: (details) {
+          setState(() {
+            _offset += details.delta;
+          });
+        },
+        child: Transform(
+          transform: Matrix4.identity()
+            ..translate(_offset.dx, _offset.dy)
+            ..scale(_scale),
+          child: Stack(
+            children: [
+              CustomPaint(
+                size: Size.infinite,
+                painter:
+                    TimelinePainter(minEpoch: minEpoch, maxEpoch: maxEpoch),
+              ),
+              for (final event in sortedEvents)
+                Positioned(
+                  left: MediaQuery.of(context).size.width / 2 - 10,
+                  top: (event.epoch - minEpoch) /
+                      (maxEpoch - minEpoch) *
+                      MediaQuery.of(context).size.height,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(event.title),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Date:${event.date}'),
+                              SizedBox(height: 8),
+                              Text('Description:${event.description}'),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.black),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
