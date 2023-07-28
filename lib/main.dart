@@ -24,9 +24,10 @@ class _TimelineState extends State<Timeline> {
       ..sort((a, b) => a.epoch.compareTo(b.epoch));
     final minEpoch = sortedEvents.first.epoch;
     final maxEpoch = sortedEvents.last.epoch;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
             context: context,
@@ -80,7 +81,8 @@ class _TimelineState extends State<Timeline> {
             ),
           );
         },
-        child: Icon(Icons.add),
+        label: Text('New Event'),
+        icon: Icon(Icons.add),
       ),
       body: GestureDetector(
         onDoubleTap: () {
@@ -102,8 +104,10 @@ class _TimelineState extends State<Timeline> {
             children: [
               CustomPaint(
                 size: Size.infinite,
-                painter:
-                    TimelinePainter(minEpoch: minEpoch, maxEpoch: maxEpoch),
+                painter: TimelinePainter(
+                    minEpoch: minEpoch,
+                    maxEpoch: maxEpoch,
+                    color: theme.accentColor),
               ),
               for (final event in sortedEvents)
                 Positioned(
@@ -139,7 +143,7 @@ class _TimelineState extends State<Timeline> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.black),
+                          shape: BoxShape.circle, color: theme.accentColor),
                     ),
                   ),
                 ),
@@ -154,13 +158,15 @@ class _TimelineState extends State<Timeline> {
 class TimelinePainter extends CustomPainter {
   final int minEpoch;
   final int maxEpoch;
+  final Color color;
 
-  TimelinePainter({required this.minEpoch, required this.maxEpoch});
+  TimelinePainter(
+      {required this.minEpoch, required this.maxEpoch, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
+      ..color = color
       ..strokeWidth = 2.0;
 
     final startY = (0 - minEpoch) / (maxEpoch - minEpoch) * size.height;
@@ -310,10 +316,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: 'Timeline for Humanity',
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       home: Scaffold(
         body: Timeline(
           events: events,
