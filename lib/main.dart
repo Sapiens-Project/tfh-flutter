@@ -25,6 +25,14 @@ class _TimelineState extends State<Timeline> {
     final minEpoch = sortedEvents.first.epoch;
     final maxEpoch = sortedEvents.last.epoch;
     final theme = Theme.of(context);
+    final isDarkTheme = theme.brightness == Brightness.dark;
+    final timelineColor = isDarkTheme ? Colors.grey[200] : Colors.grey[800];
+    final fabFGColor = isDarkTheme ? Colors.grey[800] : Colors.grey[200];
+    final fabBGColor = isDarkTheme ? Colors.grey[200] : Colors.grey[800];
+
+    if (timelineColor == null) {
+      throw Exception("timeline color cannot be null");
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -32,7 +40,7 @@ class _TimelineState extends State<Timeline> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Add Event'),
+              title: Text('Add Event'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -61,7 +69,7 @@ class _TimelineState extends State<Timeline> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -75,14 +83,15 @@ class _TimelineState extends State<Timeline> {
                     });
                     Navigator.pop(context);
                   },
-                  child: Text('Add'),
+                  child: const Text('Add'),
                 ),
               ],
             ),
           );
         },
-        label: const Text('New Event'),
-        icon: const Icon(Icons.add),
+        label: Text('New Event', style: TextStyle(color: fabFGColor)),
+        icon: Icon(Icons.add, color: fabFGColor),
+        backgroundColor: fabBGColor,
       ),
       body: GestureDetector(
         onDoubleTap: () {
@@ -107,7 +116,7 @@ class _TimelineState extends State<Timeline> {
                 painter: TimelinePainter(
                     minEpoch: minEpoch,
                     maxEpoch: maxEpoch,
-                    color: theme.colorScheme.secondary),
+                    color: timelineColor),
               ),
               for (final event in sortedEvents)
                 Positioned(
@@ -143,8 +152,7 @@ class _TimelineState extends State<Timeline> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: theme.colorScheme.secondary),
+                          shape: BoxShape.circle, color: timelineColor),
                     ),
                   ),
                 ),
@@ -316,13 +324,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primarySwatch = Colors.blue;
+    const primarySwatch = Colors.blue;
     final primaryColor = primarySwatch[500];
     final primaryColorDark = primarySwatch[700];
     final primaryColorLight = primarySwatch[300];
     final accentColor = Colors.grey[200];
+    final accentColorLight = Colors.grey[800];
 
-    if (primaryColor == null || accentColor == null) {
+    if (primaryColor == null ||
+        accentColor == null ||
+        accentColorLight == null) {
       throw Exception('Primary color and accent color must not be null');
     }
 
@@ -381,7 +392,7 @@ class MyApp extends StatelessWidget {
         ),
         colorScheme: ColorScheme.light(
           primary: primaryColor,
-          secondary: accentColor,
+          secondary: accentColorLight,
         ).copyWith(secondary: accentColor),
       ),
       darkTheme: ThemeData(
