@@ -107,7 +107,7 @@ class _TimelineState extends State<Timeline> {
                 painter: TimelinePainter(
                     minEpoch: minEpoch,
                     maxEpoch: maxEpoch,
-                    color: theme.accentColor),
+                    color: theme.colorScheme.secondary),
               ),
               for (final event in sortedEvents)
                 Positioned(
@@ -143,7 +143,8 @@ class _TimelineState extends State<Timeline> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: theme.accentColor),
+                          shape: BoxShape.circle,
+                          color: theme.colorScheme.secondary),
                     ),
                   ),
                 ),
@@ -315,15 +316,131 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primarySwatch = Colors.blue;
+    final primaryColor = primarySwatch[500];
+    final primaryColorDark = primarySwatch[700];
+    final primaryColorLight = primarySwatch[300];
+    final accentColor = Colors.grey[200];
+
+    if (primaryColor == null || accentColor == null) {
+      throw Exception('Primary color and accent color must not be null');
+    }
+
     return MaterialApp(
-      title: 'Timeline for Humanity',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        body: Timeline(
-          events: events,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: primaryColor,
+        primaryColorDark: primaryColorDark,
+        primaryColorLight: primaryColorLight,
+        switchTheme: SwitchThemeData(
+          thumbColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+          trackColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
         ),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+        ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+        ),
+        colorScheme: ColorScheme.light(
+          primary: primaryColor,
+          secondary: accentColor,
+        ).copyWith(secondary: accentColor),
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: primaryColor,
+        primaryColorDark: primaryColorDark,
+        primaryColorLight: primaryColorLight,
+        switchTheme: SwitchThemeData(
+          thumbColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+          trackColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+        ),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+        ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return null;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return accentColor;
+            }
+            return null;
+          }),
+        ),
+        colorScheme: ColorScheme.dark(
+          primary: primaryColor,
+          secondary: accentColor,
+        ).copyWith(secondary: accentColor),
+      ),
+      home: Scaffold(body: Timeline(events: events)),
     );
   }
 }
