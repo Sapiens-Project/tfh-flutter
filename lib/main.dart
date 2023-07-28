@@ -32,7 +32,7 @@ class _TimelineState extends State<Timeline> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Add Event'),
+              title: const Text('Add Event'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -81,8 +81,8 @@ class _TimelineState extends State<Timeline> {
             ),
           );
         },
-        label: Text('New Event'),
-        icon: Icon(Icons.add),
+        label: const Text('New Event'),
+        icon: const Icon(Icons.add),
       ),
       body: GestureDetector(
         onDoubleTap: () {
@@ -126,14 +126,14 @@ class _TimelineState extends State<Timeline> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Date:${event.date}'),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text('Description:${event.description}'),
                             ],
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: Text('Close'),
+                              child: const Text('Close'),
                             ),
                           ],
                         ),
