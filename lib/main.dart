@@ -16,10 +16,10 @@ class _TimelineState extends State<Timeline> {
 
   @override
   Widget build(BuildContext context) {
-    final minEpoch =
-        widget.events.map((e) => e.epoch).reduce((a, b) => a < b ? a : b);
-    final maxEpoch =
-        widget.events.map((e) => e.epoch).reduce((a, b) => a > b ? a : b);
+    final sortedEvents = widget.events
+      ..sort((a, b) => a.epoch.compareTo(b.epoch));
+    final minEpoch = sortedEvents.first.epoch;
+    final maxEpoch = sortedEvents.last.epoch;
 
     return GestureDetector(
       // onScaleStart: (details) {
@@ -51,9 +51,9 @@ class _TimelineState extends State<Timeline> {
           children: [
             CustomPaint(
               size: Size.infinite,
-              painter: TimelinePainter(),
+              painter: TimelinePainter(minEpoch: minEpoch, maxEpoch: maxEpoch),
             ),
-            for (final event in widget.events)
+            for (final event in sortedEvents)
               Positioned(
                 left: MediaQuery.of(context).size.width / 2 - 10,
                 top: (event.epoch - minEpoch) /
@@ -99,15 +99,23 @@ class _TimelineState extends State<Timeline> {
 }
 
 class TimelinePainter extends CustomPainter {
+  final int minEpoch;
+  final int maxEpoch;
+
+  TimelinePainter({required this.minEpoch, required this.maxEpoch});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.black
       ..strokeWidth = 2.0;
 
+    final startY = (0 - minEpoch) / (maxEpoch - minEpoch) * size.height;
+    final endY = (maxEpoch - minEpoch) / (maxEpoch - minEpoch) * size.height;
+
     canvas.drawLine(
-      Offset(size.width / 2, 0),
-      Offset(size.width / 2, size.height),
+      Offset(size.width / 2, startY),
+      Offset(size.width / 2, endY),
       paint,
     );
   }
