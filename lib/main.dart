@@ -40,7 +40,7 @@ class _TimelineState extends State<Timeline> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Add Event'),
+              title: const Text('Add Event'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -69,7 +69,7 @@ class _TimelineState extends State<Timeline> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -116,11 +116,11 @@ class _TimelineState extends State<Timeline> {
                 painter: TimelinePainter(
                     minEpoch: minEpoch,
                     maxEpoch: maxEpoch,
-                    color: timelineColor),
+                    color: timelineColor!),
               ),
               for (final event in sortedEvents)
                 Positioned(
-                  left: MediaQuery.of(context).size.width / 2 - 10,
+                  left: (MediaQuery.of(context).size.width / 2 - 5),
                   top: (event.epoch - minEpoch) /
                       (maxEpoch - minEpoch) *
                       MediaQuery.of(context).size.height,
@@ -149,10 +149,10 @@ class _TimelineState extends State<Timeline> {
                       );
                     },
                     child: Container(
-                      width: 20,
-                      height: 20,
+                      width: 10,
+                      height: 10,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: timelineColor),
+                          shape: BoxShape.circle, color: timelineColor!),
                     ),
                   ),
                 ),
